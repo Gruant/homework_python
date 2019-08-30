@@ -1,6 +1,8 @@
 class Animal():
-    def __init__(self, subanimal, name, weight):
-        self.subanimal = subanimal
+    
+    legs = 0
+
+    def __init__(self, name, weight):
         self.name = name
         self.weight = weight
     
@@ -10,38 +12,30 @@ class Animal():
     def setvoice(self, voice):
         self.voice = voice
     
+    def howmuchlegs(self, leg):
+        self.legs = leg
+    
 
-class Animal_eggs(Animal):
+class Goose(Animal):
     def interaction(self):
-        print ('Собираем яйца у {}'.format(self.name))
+        print ('Собираем яйца у {}'.format(self.name)) 
 
-class Animal_milk(Animal):
+class Cow(Animal):
     def interaction(self):
         print ('Доим {}'.format(self.name))
 
-class Animal_cut(Animal):
+class Sheep(Animal):
     def interaction(self):
         print ('Взяди шерсть с {}'.format(self.name))
 
-class Goose(Animal_eggs):
-    pass 
+class Chicken(Animal):
+    def interaction(self):
+        print ('Собираем яйца у {}'.format(self.name))
 
-class Cow(Animal_milk):
-    pass
+class Goat(Animal):
+    def interaction(self):
+        print ('Доим {}'.format(self.name))
 
-class Sheep(Animal):
-    pass
-
-class Chicken(Animal_eggs):
-    pass
-
-class Goat(Animal_milk):
-    pass
-
-class Duck(Animal_eggs):
-    pass
-
-a=Goose('Гусь', 'Серый', 15)
-b=Goat('Коза', 'Manya', 45)
-
-print(a.weight, b.name)
+class Duck(Animal):
+    def interaction(self):
+        print ('Собираем яйца у {}'.format(self.name))
