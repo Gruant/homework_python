@@ -41,6 +41,8 @@ def main():
             print(multi(first_number, second_number))
         elif command == '/':
             print(div(first_number, second_number))
+        else:
+            print('Неверная команда')
     except TooMuchArg as e:
         print (e)
     except ValueError:
