@@ -6,7 +6,7 @@ from pprint import pprint
 def take_data_json(data):
     str_list = ''
     for data_str in data['rss']['channel']['items']:
-        str_list += data_str['description']
+        str_list += data_str['description'].lower()
     return take_list(str_list)
 
 def take_data_xml(root):
