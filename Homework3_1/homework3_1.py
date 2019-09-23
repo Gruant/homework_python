@@ -2,7 +2,6 @@ import requests
 import os
 
 API_KEY = 'trnsl.1.1.20190712T081241Z.0309348472c8719d.0efdbc7ba1c507292080e3fbffe4427f7ce9a9f0'
-TOKEN = 'AgAAAAAAoNqMAAXiBqI7Lom3qkx4t-ZOPGTAuBI'
 GET_URL = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
 URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
 
@@ -24,7 +23,6 @@ def translate_it(from_file, to_file, tran_in, tran_out='ru'):
         for line in file:
             text += line
 
-
     params = {
         'key': API_KEY,
         'text': text,
@@ -44,19 +42,39 @@ def translate_it(from_file, to_file, tran_in, tran_out='ru'):
 
     print(f'Перевод записан в {full_path}')
 
-#получаем ссылку загрузчика Yandex Disk
+
+def take_token():
+    URL = 'https://oauth.yandex.ru/token'
+    print('Для записи на ваш Yandex Disk необходимо предоставить доступ:')
+    print('Перейдите по ссылке https://oauth.yandex.ru/authorize?response_type=code&client_id=f49521549fa840b3bdb30d5a139df49c')
+    user_code = input('И введите полученный код: ')
+
+    data = {
+        'grant_type': 'authorization_code',
+        'code': user_code,
+        'client_id': 'f49521549fa840b3bdb30d5a139df49c',
+        'client_secret': '178fe59134b3485c990ee94cf55297ac',
+    }
+
+    resp = requests.post(URL, data=data)
+    token = resp.json()['access_token']
+    return token
+
+
+# получаем ссылку загрузчика Yandex Disk
 def uploader(full_path):
+    token = take_token()
     params = {
         'path': full_path
     }
     headers = {
-        'Authorization': 'OAuth {}'.format(TOKEN),
+        'Authorization': 'OAuth {}'.format(token),
         'Content-Type': 'application/json'
 
     }
     take_link = requests.get(GET_URL, headers=headers, params=params)
-    link_json = take_link.json()
-    uploader_link = link_json['href']
+    uploader_link = take_link.json()['href']
+    # print(uploader_link)
 
     return uploader_link
 
@@ -80,12 +98,13 @@ def translate_it_yadisk(from_file, tran_in, tran_out='ru'):
     file_name = f'result_from_{tran_in}_to_{tran_out}.txt'
     link = uploader(file_name)
 
-#запись в файл, отправка на диск и удаление с локального диска
+# запись в файл, отправка на диск и удаление с локального диска
     with open(file_name, mode='w', encoding='utf-8') as f:
         f.write(result)
         requests.put(link, data=result.encode('utf-8'))
     os.remove(file_name)
 
+    print(f'/nФайл {file_name} записан на ваш Yandex Disk')
 
 
 if __name__ == '__main__':
@@ -104,5 +123,5 @@ if __name__ == '__main__':
         tran_in = input('С какого языка переводим (например en): ').lower()
         tran_out = input('На какой язык переводим (по умолчанию ru): ').lower()
         translate_it_yadisk(from_file_path, tran_in, tran_out)
-        print('Спасибо, файл записался на мой аккаунт, только к нему у меня есть токен')
+
 
