@@ -13,8 +13,6 @@ class User():
 
     def __init__(self, id):
         self.id = id
-
-    def user_info(self):
         params = {
             'v': '5.101',
             'access_token': SERVICE_TOKEN,
@@ -27,8 +25,6 @@ class User():
         self.last_name = response['response'][0]['last_name']
         self.id = response['response'][0]['id']
         self.link += response['response'][0]['domain']
-        return response
-
 
 
     def user_friends(self):
@@ -36,7 +32,7 @@ class User():
             params = {
                 'v': '5.101',
                 'access_token': SERVICE_TOKEN,
-                'user_id': self.user_info()['response'][0]['id']
+                'user_id': self.id
             }
             response = requests.get('https://api.vk.com/method/friends.get', params=params).json()
             friends_list = set(response['response']['items'])
@@ -60,8 +56,6 @@ def main():
     user_a, command, user_b = input('Введите id 2-х пользователей и комманду в виде аперанда: ').split()
     if command == '&':
         user1, user2 = User(user_a), User(user_b)
-        user1.user_info()
-        user2.user_info()
         if user1.is_closed == True:
             print (f'Пользователь {user1.link} ограничил доступ к списку друзей')
         elif user1.is_closed == True:
@@ -74,7 +68,6 @@ def main():
             else:
                 print(f'Кол-во общих друзей: {len(classlist)}')
                 for i in classlist:
-                    i.user_info()
                     print('{} - {} {}'.format(i.link, i.first_name, i.last_name))
     else:
         print('Введена неверная команда')
