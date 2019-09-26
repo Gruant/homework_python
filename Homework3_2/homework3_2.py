@@ -1,6 +1,22 @@
 import requests
+from urllib.parse import urlencode
 
-SERVICE_TOKEN = 'adcae950adcae950adcae95046ada7e3f7aadcaadcae950f043253928122f9fc7f4ade7'
+
+def get_user_access():
+    URL = 'https://oauth.vk.com/authorize'
+    params = {
+        'client_id': '7148260',
+        'response_type': 'token',
+        'display': 'page',
+        'scope': 'friends',
+        'v': '5.101',
+    }
+    print('?'.join((URL, urlencode(params))))
+    TOKEN = input('Введите токен из ссылки редиректа: ')
+    return TOKEN
+
+
+TOKEN = get_user_access()
 
 
 class User():
@@ -9,13 +25,14 @@ class User():
     # id может быть число или имя (далее мы будем всегда получать числовой id, чтобы получать список друзей.
     id = ''
     link = 'https://vk.com/'
-    is_closed = ''
+    is_closed = bool
+    class_list = []
 
     def __init__(self, id):
         self.id = id
         params = {
             'v': '5.101',
-            'access_token': SERVICE_TOKEN,
+            'access_token': TOKEN,
             'user_ids': self.id,
             'fields': 'domain'
         }
@@ -26,51 +43,39 @@ class User():
         self.id = response['response'][0]['id']
         self.link += response['response'][0]['domain']
 
+    def __str__(self):
+        return '{} - {} {}'.format(self.link, self.first_name, self.last_name)
 
-    def user_friends(self):
-        if self.is_closed == False:
+    def __and__(self, other):
+        if not self.is_closed:
             params = {
                 'v': '5.101',
-                'access_token': SERVICE_TOKEN,
-                'user_id': self.id
+                'access_token': TOKEN,
+                'source_uid': self.id,
+                'target_uid': other.id,
             }
-            response = requests.get('https://api.vk.com/method/friends.get', params=params).json()
-            friends_list = set(response['response']['items'])
-            return friends_list
+            response = requests.get('https://api.vk.com/method/friends.getMutual', params=params).json()
+            friends_list = response['response']
+            newlist = []
+            for i in friends_list:
+                newlist.append(User(i))
+            return newlist
         else:
             return None
 
-def common_friends(set1, set2):
-    common = list(set1 & set2)
-    return common
-
-
-def userclass(userlist):
-    newlist = []
-    for i in userlist:
-        newlist.append(User(i))
-    return newlist
-
 
 def main():
-    user_a, command, user_b = input('Введите id 2-х пользователей и комманду в виде аперанда: ').split()
-    if command == '&':
-        user1, user2 = User(user_a), User(user_b)
-        if user1.is_closed == True:
-            print (f'Пользователь {user1.link} ограничил доступ к списку друзей')
-        elif user1.is_closed == True:
-            print (f'Пользователь {user2.link} ограничил доступ к списку друзей')
-        else:
-            common_friend = common_friends(user1.user_friends(), user2.user_friends())
-            classlist = userclass(common_friend)
-            if len(classlist) == 0:
-                print ('Общих друзей нет')
-            else:
-                print(f'Кол-во общих друзей: {len(classlist)}')
-                for i in classlist:
-                    print('{} - {} {}'.format(i.link, i.first_name, i.last_name))
+    user1, user2 = input('Введите id 2-х пользователей и комманду в виде аперанда(без пробелов): ').split('&')
+    # get_user_access()
+    user1 = User(user1)
+    user2 = User(user2)
+    ids_list = user1 & user2
+    if len(ids_list) == 0:
+        print('Общих друзей нет')
     else:
-        print('Введена неверная команда')
+        print(f'Кол-во общих друзей: {len(ids_list)}')
+        for i in ids_list:
+            print(str(i))
 
 
 if __name__ == '__main__':
