@@ -47,21 +47,19 @@ class User():
         return '{} - {} {}'.format(self.link, self.first_name, self.last_name)
 
     def __and__(self, other):
-        if not self.is_closed:
-            params = {
-                'v': '5.101',
-                'access_token': TOKEN,
-                'source_uid': self.id,
-                'target_uid': other.id,
-            }
-            response = requests.get('https://api.vk.com/method/friends.getMutual', params=params).json()
-            friends_list = response['response']
-            newlist = []
-            for i in friends_list:
-                newlist.append(User(i))
-            return newlist
-        else:
-            return None
+        params = {
+            'v': '5.101',
+            'access_token': TOKEN,
+            'source_uid': self.id,
+            'target_uid': other.id,
+        }
+        response = requests.get('https://api.vk.com/method/friends.getMutual', params=params).json()
+        friends_list = response['response']
+        newlist = []
+        for i in friends_list:
+            newlist.append(User(i))
+        return newlist
+
 
 
 def main():
