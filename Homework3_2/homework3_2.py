@@ -1,6 +1,6 @@
 import requests
 
-SERVICE_TOKEN = ''
+SERVICE_TOKEN = 'adcae950adcae950adcae95046ada7e3f7aadcaadcae950f043253928122f9fc7f4ade7'
 
 
 class User():
@@ -72,7 +72,7 @@ def main():
             if len(classlist) == 0:
                 print ('Общих друзей нет')
             else:
-                print('Список общих друзей: ')
+                print(f'Кол-во общих друзей: {len(classlist)}')
                 for i in classlist:
                     i.user_info()
                     print('{} - {} {}'.format(i.link, i.first_name, i.last_name))
