@@ -38,7 +38,7 @@ class User():
             friends_list = set(response['response']['items'])
             return friends_list
         else:
-            return False
+            return None
 
 def common_friends(set1, set2):
     common = list(set1 & set2)
