@@ -1,6 +1,6 @@
 import requests
 
-SERVICE_TOKEN = '7abc891b7abc891b7abc891bd47ad19bff77abc7abc891b273732a14d8176e6f0aa6d55'
+SERVICE_TOKEN = ''
 
 
 class User():
@@ -32,14 +32,17 @@ class User():
 
 
     def user_friends(self):
-        params = {
-            'v': '5.101',
-            'access_token': SERVICE_TOKEN,
-            'user_id': self.user_info()['response'][0]['id']
-        }
-        response = requests.get('https://api.vk.com/method/friends.get', params=params).json()
-        friends_list = set(response['response']['items'])
-        return friends_list
+        if self.is_closed == False:
+            params = {
+                'v': '5.101',
+                'access_token': SERVICE_TOKEN,
+                'user_id': self.user_info()['response'][0]['id']
+            }
+            response = requests.get('https://api.vk.com/method/friends.get', params=params).json()
+            friends_list = set(response['response']['items'])
+            return friends_list
+        else:
+            return False
 
 def common_friends(set1, set2):
     common = list(set1 & set2)
@@ -57,12 +60,22 @@ def main():
     user_a, command, user_b = input('Введите id 2-х пользователей и комманду в виде аперанда: ').split()
     if command == '&':
         user1, user2 = User(user_a), User(user_b)
-        common_friend = common_friends(user1.user_friends(), user2.user_friends())
-        classlist = userclass(common_friend)
-        print('Список общих друзей: ')
-        for i in classlist:
-            i.user_info()
-            print('{} - {} {}'.format(i.link, i.first_name, i.last_name))
+        user1.user_info()
+        user2.user_info()
+        if user1.is_closed == True:
+            print (f'Пользователь {user1.link} ограничил доступ к списку друзей')
+        elif user1.is_closed == True:
+            print (f'Пользователь {user2.link} ограничил доступ к списку друзей')
+        else:
+            common_friend = common_friends(user1.user_friends(), user2.user_friends())
+            classlist = userclass(common_friend)
+            if len(classlist) == 0:
+                print ('Общих друзей нет')
+            else:
+                print('Список общих друзей: ')
+                for i in classlist:
+                    i.user_info()
+                    print('{} - {} {}'.format(i.link, i.first_name, i.last_name))
     else:
         print('Введена неверная команда')
 
