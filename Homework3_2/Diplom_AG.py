@@ -19,6 +19,15 @@ class User():
         response = requests.get('https://api.vk.com/method/users.get', params=params_user).json()
         self.is_closed = response['response'][0]['is_closed']
         self.id = response['response'][0]['id']
+    
+    # def take_friends_list(self)
+    #     params_user = {
+    #         'v': '5.101',
+    #         'access_token': TOKEN,
+    #         'user_ids': self.id,
+    #     }
+    #     response = requests.get('https://api.vk.com/method/users.get', params=params_user).json()
+
 
     def take_groups(self):    
         params_user = {
@@ -30,8 +39,12 @@ class User():
             'fields': 'members_count'
         }
         response = requests.get('https://api.vk.com/method/groups.get', params=params_user).json()
+        print('.')
         group_list = []
         for i in response['response']['items']:
             group_list.append(dict(gid = i['id'], name = i['name'], members_count = i['members_count']))
         print(group_list)
 
+user1=User('eshmargunov')
+user1.take_user_info()
+print(user1.take_groups())
