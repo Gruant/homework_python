@@ -5,19 +5,35 @@ TOKEN =  '73eaea320bdc0d3299faa475c196cfea1c4df9da4c6d291633f9fe8f83c08c4de2a3ab
 
 class User():
     id = ''
-    is_closed = bool
 
     def __init__(self, id):
-        self.id = id
+        params = {
+            'v': '5.;/l.101',
+            'access_token': TOKEN,
+            'user_ids': self.id,
+        }
+        response = requests.get('https://api.vk.com/method/users.get', params=params).json()
+        self.id = response['response'][0]['id']
+#запрос списка друзей
+#запрос групп
+#получение id участников групп
+#сравнение Id участников групп и списка друзей
+    # если нет совпадений, записываем в группу Json
 
-    def take_user_info(self):    
+    # def do_request (self, URL, params)
+    #     static_params = {
+    #         'v': '5.101',
+    #         'access_token': TOKEN
+    #     }
+
+
+    def int_id(self):
         params_user = {
-            'v': '5.101',
+            'v': '5.;/l.101',
             'access_token': TOKEN,
             'user_ids': self.id,
         }
         response = requests.get('https://api.vk.com/method/users.get', params=params_user).json()
-        self.is_closed = response['response'][0]['is_closed']
         self.id = response['response'][0]['id']
     
     # def take_friends_list(self)
@@ -39,12 +55,28 @@ class User():
             'fields': 'members_count'
         }
         response = requests.get('https://api.vk.com/method/groups.get', params=params_user).json()
-        print('.')
         group_list = []
         for i in response['response']['items']:
             group_list.append(dict(gid = i['id'], name = i['name'], members_count = i['members_count']))
-        print(group_list)
+        return group_list
+
+    def friends_id_from_groups(self, groups_list):
+        print('Выбираем группы в которой нет друзей:')
+        for group in groups_list:
+            params = {
+                'v': '5.101',
+                'access_token': TOKEN,
+                'group_id': group['gid'],
+                'filter': 'friends'
+            }
+            response_friend_in_group = requests.get('https://api.vk.com/method/groups.getMembers', params=params).json()
+            print(response_friend_in_group)
+            print('.', end='')
+
+
+
+
 
 user1=User('eshmargunov')
-user1.take_user_info()
-print(user1.take_groups())
+groups_list = user1.take_groups()
+print(user1.friends_id_from_groups(groups_list)
