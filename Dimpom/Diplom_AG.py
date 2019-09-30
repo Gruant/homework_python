@@ -102,7 +102,8 @@ def write_to_json(group_list):
 
 
 def main():
-    user = User('eshmargunov')
+    user_id = input('Введите id пользователя: ')
+    user = User(user_id)
     groups_list = user.take_groups()
     write_to_json(user.groups_without_friends(groups_list))
     user.groups_with_friend()
