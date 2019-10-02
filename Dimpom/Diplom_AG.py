@@ -25,7 +25,7 @@ def clean_request(URL, params):
                     error = response['error']['error_code']
                     if error in (18, 30):
                         print('Пользователь удален, заблокирован или профиль приватный')
-                        return None
+                        sys.exit()
                     elif error == 6:
                         time.sleep(0.4)
                         continue
